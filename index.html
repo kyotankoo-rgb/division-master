@@ -242,6 +242,16 @@
       background: linear-gradient(135deg, #a855f7, #8b5cf6);
       color: #fff; font-weight: 700; border: none; font-size: 14px;
     }
+
+    /* 광고 팝업 */
+    .ad-popup-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+    .ad-popup { background: linear-gradient(135deg, #2d1b4e, #1a0a2e); border-radius: 24px; padding: 40px 30px; max-width: 340px; width: 100%; text-align: center; border: 2px solid #a855f7; box-shadow: 0 0 40px rgba(168,85,247,0.4); }
+    .ad-popup-icon { font-size: 50px; margin-bottom: 15px; }
+    .ad-popup-title { font-size: 24px; font-weight: 700; margin-bottom: 10px; color: #fff; }
+    .ad-popup-msg { color: #aa88cc; font-size: 14px; margin-bottom: 8px; }
+    .ad-play-count { color: #c084fc; font-size: 13px; margin-bottom: 25px; }
+    .btn-watch-ad { background: linear-gradient(135deg, #a855f7, #8b5cf6); padding: 16px 24px; border-radius: 50px; font-size: 15px; font-weight: 700; color: #fff; width: 100%; margin-bottom: 12px; box-shadow: 0 0 20px rgba(168,85,247,0.4); }
+    .btn-remove-ads { background: transparent; border: 2px solid #c084fc !important; padding: 14px 24px; border-radius: 50px; font-size: 14px; color: #c084fc; width: 100%; }
   </style>
 </head>
 <body>
@@ -423,6 +433,18 @@
   <button id="btnBack" class="btn-back" onclick="showScreen('title')">돌아가기</button>
 </div>
 
+<!-- 광고 팝업 -->
+<div id="ad-popup" class="ad-popup-overlay hidden">
+  <div class="ad-popup">
+    <div class="ad-popup-icon">🎮</div>
+    <div id="adPopupTitle" class="ad-popup-title">계속 플레이하기</div>
+    <div id="adPopupMsg" class="ad-popup-msg">3회 플레이를 완료했습니다!<br>광고를 시청하거나 광고 없는 버전을 구매하세요.</div>
+    <div id="adPopupCount" class="ad-popup-count"></div>
+    <button id="btnWatchAd" class="btn-watch-ad" onclick="watchAd()">📺 광고 보고 계속하기</button>
+    <button id="btnRemoveAds" class="btn-remove-ads" onclick="removeAds()">💎 광고 제거 (₩1,000)</button>
+  </div>
+</div>
+
 <script>
 // ===== 다국어 =====
 const LANG = {
@@ -490,6 +512,11 @@ const LANG = {
     continue: '계속하기',
     share: '📤 공유하기',
     shareMsg: '🎉 {name}님이 나누기 마스터에서 {score}점으로 목표를 달성했어요! 보상: {reward}',
+    adPopupTitle: '계속 플레이하기',
+    adPopupMsg: '3회 플레이를 완료했습니다!<br>광고를 시청하거나 광고 없는 버전을 구매하세요.',
+    watchAd: '📺 광고 보고 계속하기',
+    removeAds: '💎 광고 제거 (구매)',
+    adFree: '🎉 광고가 제거되었습니다!',
   },
   en: {
     title: 'Division Master',
@@ -555,6 +582,11 @@ const LANG = {
     continue: 'Continue',
     share: '📤 Share',
     shareMsg: '🎉 {name} achieved the goal with {score}pts in Division Master! Reward: {reward}',
+    adPopupTitle: 'Continue Playing',
+    adPopupMsg: 'You\'ve completed 3 plays!<br>Watch an ad or purchase ad-free version.',
+    watchAd: '📺 Watch Ad to Continue',
+    removeAds: '💎 Remove Ads (Purchase)',
+    adFree: '🎉 Ads removed!',
   },
   zh: {
     title: '除法大师',
@@ -620,6 +652,11 @@ const LANG = {
     continue: '继续',
     share: '📤 分享',
     shareMsg: '🎉 {name}在除法大师中以{score}分达成目标！奖励：{reward}',
+    adPopupTitle: '继续游戏',
+    adPopupMsg: '您已完成3次游戏！<br>观看广告或购买无广告版本。',
+    watchAd: '📺 看广告继续',
+    removeAds: '💎 移除广告（购买）',
+    adFree: '🎉 广告已移除！',
   },
   ja: {
     title: '割り算マスター',
@@ -685,6 +722,11 @@ const LANG = {
     continue: '続ける',
     share: '📤 共有',
     shareMsg: '🎉 {name}さんが割り算マスターで{score}点で目標達成！ご褒美：{reward}',
+    adPopupTitle: 'プレイを続ける',
+    adPopupMsg: '3回プレイしました！<br>広告を見るか、広告なし版を購入してください。',
+    watchAd: '📺 広告を見て続ける',
+    removeAds: '💎 広告を削除（購入）',
+    adFree: '🎉 広告が削除されました！',
   },
   vi: {
     title: 'Bậc Thầy Chia',
@@ -750,6 +792,11 @@ const LANG = {
     continue: 'Tiếp tục',
     share: '📤 Chia sẻ',
     shareMsg: '🎉 {name} đã đạt mục tiêu với {score} điểm trong Division Master! Phần thưởng: {reward}',
+    adPopupTitle: 'Tiếp tục chơi',
+    adPopupMsg: 'Bạn đã chơi 3 lần!<br>Xem quảng cáo hoặc mua bản không quảng cáo.',
+    watchAd: '📺 Xem quảng cáo để tiếp tục',
+    removeAds: '💎 Xóa quảng cáo (mua)',
+    adFree: '🎉 Đã xóa quảng cáo!',
   },
   es: {
     title: 'Maestro División',
@@ -815,6 +862,11 @@ const LANG = {
     continue: 'Continuar',
     share: '📤 Compartir',
     shareMsg: '🎉 ¡{name} logró la meta con {score}pts en Division Master! Recompensa: {reward}',
+    adPopupTitle: 'Continuar Jugando',
+    adPopupMsg: '¡Has jugado 3 veces!<br>Mira un anuncio o compra la versión sin anuncios.',
+    watchAd: '📺 Ver anuncio para continuar',
+    removeAds: '💎 Quitar anuncios (comprar)',
+    adFree: '🎉 ¡Sin anuncios!',
   },
   fr: {
     title: 'Maître Division',
@@ -880,6 +932,11 @@ const LANG = {
     continue: 'Continuer',
     share: '📤 Partager',
     shareMsg: '🎉 {name} a atteint l\'objectif avec {score}pts dans Division Master! Récompense: {reward}',
+    adPopupTitle: 'Continuer à Jouer',
+    adPopupMsg: 'Vous avez joué 3 fois!<br>Regardez une pub ou achetez la version sans pub.',
+    watchAd: '📺 Voir la pub pour continuer',
+    removeAds: '💎 Supprimer les pubs (acheter)',
+    adFree: '🎉 Sans publicités!',
   },
   de: {
     title: 'Divisions-Meister',
@@ -945,6 +1002,11 @@ const LANG = {
     continue: 'Weiter',
     share: '📤 Teilen',
     shareMsg: '🎉 {name} hat das Ziel mit {score}Pkt in Division Master erreicht! Belohnung: {reward}',
+    adPopupTitle: 'Weiterspielen',
+    adPopupMsg: 'Du hast 3 Mal gespielt!<br>Schau eine Werbung oder kaufe die werbefreie Version.',
+    watchAd: '📺 Werbung ansehen zum Fortfahren',
+    removeAds: '💎 Werbung entfernen (kaufen)',
+    adFree: '🎉 Werbefrei!',
   },
   id: {
     title: 'Master Pembagian',
@@ -1010,6 +1072,11 @@ const LANG = {
     continue: 'Lanjut',
     share: '📤 Bagikan',
     shareMsg: '🎉 {name} mencapai target dengan {score}poin di Division Master! Hadiah: {reward}',
+    adPopupTitle: 'Lanjut Bermain',
+    adPopupMsg: 'Kamu sudah main 3 kali!<br>Tonton iklan atau beli versi bebas iklan.',
+    watchAd: '📺 Tonton iklan untuk lanjut',
+    removeAds: '💎 Hapus iklan (beli)',
+    adFree: '🎉 Bebas iklan!',
   },
   pt: {
     title: 'Mestre da Divisão',
@@ -1075,6 +1142,11 @@ const LANG = {
     continue: 'Continuar',
     share: '📤 Compartilhar',
     shareMsg: '🎉 {name} alcançou a meta com {score}pts no Mestre da Divisão! Recompensa: {reward}',
+    adPopupTitle: 'Continuar jogando',
+    adPopupMsg: 'Você já jogou 3 vezes!<br>Assista um anúncio ou compre a versão sem anúncios.',
+    watchAd: '📺 Ver anúncio para continuar',
+    removeAds: '💎 Remover anúncios (comprar)',
+    adFree: '🎉 Sem anúncios!',
   },
   ru: {
     title: 'Мастер Деления',
@@ -1140,6 +1212,11 @@ const LANG = {
     continue: 'Продолжить',
     share: '📤 Поделиться',
     shareMsg: '🎉 {name} достиг цели с {score}очк в Мастере Деления! Награда: {reward}',
+    adPopupTitle: 'Продолжить игру',
+    adPopupMsg: 'Вы сыграли 3 раза!<br>Посмотрите рекламу или купите версию без рекламы.',
+    watchAd: '📺 Смотреть рекламу',
+    removeAds: '💎 Убрать рекламу (купить)',
+    adFree: '🎉 Без рекламы!',
   },
   th: {
     title: 'เซียนหารเลข',
@@ -1205,6 +1282,11 @@ const LANG = {
     continue: 'ต่อ',
     share: '📤 แชร์',
     shareMsg: '🎉 {name} ทำเป้าได้ {score}คะแนน ใน เซียนหารเลข! รางวัล: {reward}',
+    adPopupTitle: 'เล่นต่อ',
+    adPopupMsg: 'คุณเล่นไป 3 ครั้งแล้ว!<br>ดูโฆษณาหรือซื้อเวอร์ชันไม่มีโฆษณา',
+    watchAd: '📺 ดูโฆษณาเพื่อเล่นต่อ',
+    removeAds: '💎 ลบโฆษณา (ซื้อ)',
+    adFree: '🎉 ไม่มีโฆษณา!',
   },
   tr: {
     title: 'Bölme Ustası',
@@ -1270,6 +1352,11 @@ const LANG = {
     continue: 'Devam',
     share: '📤 Paylaş',
     shareMsg: '🎉 {name} Bölme Ustası\'nda {score}puan ile hedefe ulaştı! Ödül: {reward}',
+    adPopupTitle: 'Oynamaya Devam',
+    adPopupMsg: '3 kez oynadınız!<br>Reklam izleyin veya reklamsız sürümü satın alın.',
+    watchAd: '📺 Reklam izle ve devam et',
+    removeAds: '💎 Reklamları kaldır (satın al)',
+    adFree: '🎉 Reklamsız!',
   }
 };
 
@@ -2174,6 +2261,97 @@ document.addEventListener('visibilitychange', function() {
     }
   }
 });
+
+// ===== 광고 팝업 로직 =====
+let adPlayCount = 0;
+let isAdFree = false;
+const AD_PLAY_LIMIT = 3;
+
+try {
+  const savedPlayCount = localStorage.getItem('division-ad-playcount');
+  if (savedPlayCount) adPlayCount = parseInt(savedPlayCount, 10) || 0;
+  const savedAdFree = localStorage.getItem('division-ad-free');
+  if (savedAdFree === 'true') isAdFree = true;
+} catch(e) {}
+
+function saveAdData() {
+  try {
+    localStorage.setItem('division-ad-playcount', adPlayCount.toString());
+    localStorage.setItem('division-ad-free', isAdFree.toString());
+  } catch(e) {}
+}
+
+function updateAdPopupText() {
+  const L = LANG[currentLang];
+  document.getElementById('adPopupTitle').textContent = L.adPopupTitle;
+  document.getElementById('adPopupMsg').innerHTML = L.adPopupMsg;
+  document.getElementById('btnWatchAd').textContent = L.watchAd;
+  document.getElementById('btnRemoveAds').textContent = L.removeAds;
+}
+
+function showAdPopup() {
+  updateAdPopupText();
+  // 모든 화면 숨기기
+  document.querySelectorAll('.container').forEach(function(c) {
+    c.classList.add('hidden');
+  });
+  // 팝업 표시
+  var el = document.getElementById('ad-popup');
+  el.classList.remove('hidden');
+  el.style.cssText = 'display:flex !important; position:fixed !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:99999 !important; background:rgba(0,0,0,0.95) !important; align-items:center !important; justify-content:center !important;';
+}
+
+function hideAdPopup() {
+  var el = document.getElementById('ad-popup');
+  el.classList.add('hidden');
+  el.style.cssText = '';
+}
+
+function shouldShowAdPopup() {
+  if (isAdFree || isPracticeMode) return false;
+  return adPlayCount >= AD_PLAY_LIMIT;
+}
+
+function incrementPlayCount() {
+  if (isAdFree || isPracticeMode) return;
+  adPlayCount++;
+  saveAdData();
+}
+
+function watchAd() {
+  adPlayCount = 0;
+  saveAdData();
+  hideAdPopup();
+  showScreen('name');
+}
+
+function removeAds() {
+  alert('In-App Purchase will be available after app is published to Google Play.\n\n앱이 Google Play에 출시된 후 인앱 결제가 가능합니다.');
+}
+
+const originalRestartGame = restartGame;
+restartGame = function() {
+  if (shouldShowAdPopup()) {
+    showAdPopup();
+    return;
+  }
+  originalRestartGame();
+};
+
+const originalStartGame = startGame;
+startGame = function() {
+  if (shouldShowAdPopup()) {
+    showAdPopup();
+    return;
+  }
+  originalStartGame();
+};
+
+const originalEndGame = endGame;
+endGame = function(won) {
+  incrementPlayCount();
+  originalEndGame(won);
+};
 </script>
 
 </body>
