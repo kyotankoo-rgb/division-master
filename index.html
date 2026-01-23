@@ -1910,6 +1910,12 @@ function init() {
     document.getElementById('bestScore').textContent = best.score;
   }
   updateGoalDisplay();
+
+  // 저장된 이름 불러오기
+  try {
+    const savedName = localStorage.getItem('division-playerName');
+    if (savedName) document.getElementById('nameInput').value = savedName;
+  } catch(e) {}
 }
 init();
 
@@ -2336,6 +2342,9 @@ function resumePractice() {
 function startGame() {
   playerName = document.getElementById('nameInput').value.trim();
   if (!playerName) return;
+
+  // 이름 저장
+  try { localStorage.setItem('division-playerName', playerName); } catch(e) {}
 
   initAudio();
   round = 1; question = 1; score = 0;
